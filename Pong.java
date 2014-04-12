@@ -49,6 +49,11 @@ public class Pong extends JFrame implements ActionListener
 
    }
    
+   public void aboutMenu()
+   {
+     
+   }
+   
    public void actionPerformed(ActionEvent ae)
    {
       Object choice = ae.getSource();
@@ -65,8 +70,9 @@ public class Pong extends JFrame implements ActionListener
       }
       if(choice.equals(jmiAbout))
       {
+         
          JOptionPane.showMessageDialog(null,"121 Final Project: Pong" +
-            "\n" + "\nDeveloped By Hassan Ndow, Kevin Whetstone, Aleksey Zurkowski, & Abdullah Alam", "Pong", JOptionPane.INFORMATION_MESSAGE);
+            "\n" + "\nDeveloped by:\n\t Hassan Ndow, Kevin Whetstone,\n\t Aleksey Zurkowski, and Abdullah Alam", "Pong", JOptionPane.INFORMATION_MESSAGE);
       }
       if(choice.equals(jmiRule))
       {
@@ -78,6 +84,55 @@ public class Pong extends JFrame implements ActionListener
    {
       //creates a Pong object
       Pong p = new Pong();
+      int numPlayers = 0;
+      String[] palyers = new String[] {"Player 1", "Player 2", "Player 3", "Player 4"};
+      
+      String[] choices = {"Player 1", "Player 2"
+                ,"Player 3", "Player 4"};
+
+        //Input dialog box allowing the user to pick a day of the week.
+        String dayPicked = (String)JOptionPane.showInputDialog(null, "How many player do you wish to play with?"
+                , "Welcome to PONG game", JOptionPane.QUESTION_MESSAGE
+                , null, choices, choices[0]);
+
+        //Use an if then else statement to see if the user picked a day
+        //If picked has a null value it means the input dialog box was closed
+        //either by pressing cancel or by using the close 'x' button.
+        if (dayPicked == null)
+        {
+            JOptionPane.showMessageDialog(null, "You didn't picked a player!");
+            System.exit(0);
+        }
+        else //executes when a dayPicked has been a value.
+        {
+            String funfact = "";
+            numPlayers = 0;
+            switch (dayPicked)
+            {
+                case "Player 1":
+                   System.out.println("Player 1 only to play Pong Game");
+                   numPlayers = 1;
+                   System.out.println(numPlayers);
+                    break;
+                case "Player 2":
+                   System.out.println("Player 2 only to play Pong Game");
+                   numPlayers = 2;
+                   System.out.println(numPlayers);
+                    break;
+                case "Player 3":
+                   System.out.println("Player 3 only to play Pong Game");
+                   numPlayers = 3;
+                   System.out.println(numPlayers);
+                    break;
+                case "Player 4":
+                   System.out.println("Player 4 only to play Pong Game");
+                   numPlayers = 4;
+                   System.out.println(numPlayers);
+                    break;
+            }
+        }
+      System.out.println("Last message " + numPlayers);
+      
       
       //Sets the JFrame
       p.setTitle("Pong");
