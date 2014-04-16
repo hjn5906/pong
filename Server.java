@@ -4,6 +4,8 @@ import java.io.*;
 
 /*
  * A multi threaded server that receives login info from client, messages, and sends them back to all clients
+ * To run the server type below (default port set to 1500)
+ * > java Server
  * */
 public class Server {
    

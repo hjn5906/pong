@@ -4,6 +4,8 @@ import java.io.*;
 
 /*
  * A client that sends messages to the server
+ * To run the client type below (local address automatically set to local host name, default port set to 1500)
+ * > java Client
  * */
 public class Client {
    
