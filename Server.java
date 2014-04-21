@@ -1,29 +1,81 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
-
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 /*
  * A multi threaded server that receives login info from client, messages, and sends them back to all clients
  * To run the server type below (default port set to 1500)
  * > java Server
  * */
-public class Server {
+public class Server extends JFrame {
    
    //instance variables
    private Vector<ServerThread> clients;
    private int port;
    private static int id;
-   
+   private JTextArea jtaAreaEast, jtaAreaWest;
+   private JLabel jlCount, jlWins;
+   private JTextField jtCount, jtWins;
    //constructor
    public Server(int port) {
       this.port = port;
       clients = new Vector<ServerThread>();
+      
+      //WEST BORDER SIDE FOR PONG GAME
+      JPanel jpServerWest = new JPanel(new GridLayout(0,1));
+      JPanel jpServerEast = new JPanel(new GridLayout(0,1));
+      JPanel jpServerSouth = new JPanel(new GridLayout(2,0));
+      
+      jtaAreaWest = new JTextArea("Pong Game",20,40);
+      jtaAreaWest.setEditable(true);
+      
+      
+      jpServerWest.add(new JScrollPane(jtaAreaWest));
+      add(jpServerWest,"West");
+      
+      //jtaAreaWest.append("Pong game is here");
+      
+      //EAST BORDER SIDE FOR CLIENT CHAT
+		jtaAreaEast = new JTextArea(20,30);
+		jtaAreaEast.setEditable(false);
+	   
+      
+		jpServerEast.add(new JScrollPane(jtaAreaEast));
+      add(jpServerEast,"East");
+      
+      
+      //SOUTH BORDER SIDE FOR LABELS FOR COUNTS OF WINS AND ON
+      jlCount = new JLabel("Counts of game: ");
+      jtCount = new JTextField(10);
+      jlCount.setHorizontalAlignment(JLabel.RIGHT);
+      jtCount.setHorizontalAlignment(JTextField.CENTER);
+      //jlCount.setLabelFor(jtCount);
+      
+      jlWins = new JLabel("Number of Wins");
+      jtWins = new JTextField(5);
+      jlWins.setHorizontalAlignment(JLabel.RIGHT);
+      jtWins.setHorizontalAlignment(JTextField.CENTER);
+      
+      
+      jpServerSouth.add(jlCount);
+      jpServerSouth.add(jtCount);
+      jpServerSouth.add(jlWins);
+      jpServerSouth.add(jtWins);
+      add(jpServerSouth, "South");
+      
+      setSize(800,500);
+		setVisible(true);
+      
       try{
          ServerSocket ss = new ServerSocket(port);
-         System.out.println("Accepting clients at port: " + port);
-         
+         jtaAreaEast.append("Welcom to the Pong game. This port is: " + port);
+         jtaAreaEast.append("\n");
          while(true){
+            
             Socket cs = ss.accept();
+            jtaAreaEast.append("Accepting clients at port: " + port);
             ServerThread st = new ServerThread(cs);
             clients.add(st);
             st.start();
@@ -67,6 +119,7 @@ public class Server {
          while(true) {
             try { 
                message = (String) ois.readObject();
+               jtaAreaEast.append("\n"+message);
             }
             catch(IOException ioe) {
                System.out.println("Client disconnected");
