@@ -27,7 +27,7 @@ public class Client extends JFrame
    
    private JMenuBar jmb;                                       // the menu bar
    private JMenu jmFile, jmHelp;                               // the menus
-   private JMenuItem jmiExit, jmiStart, jmiAbout, jmiRule,  
+   private JMenuItem jmiExit, jmiStart,jmiLogin, jmiAbout, jmiRule,  
            jmiRestart;     // the menu items
    //constructor
    public Client(String address, int port){
@@ -45,11 +45,13 @@ public class Client extends JFrame
       jmiExit = new JMenuItem("Exit");
       jmiAbout = new JMenuItem("About");
       jmiRule = new JMenuItem("Rules");
+      jmiLogin = new JMenuItem("Login");
       
       //adding JMenuBar objects to the JFrame
       // jmFile.add(jmiStart);
 //       jmFile.add(jmiRestart);
-      jmFile.add(jmiExit); 
+      jmFile.add(jmiLogin); 
+      jmFile.add(jmiExit);
       jmHelp.add(jmiAbout); 
       jmHelp.add(jmiRule); 
       jmb.add(jmFile); 
@@ -71,6 +73,7 @@ public class Client extends JFrame
       jmiExit.addActionListener(this); 
       jmiAbout.addActionListener(this);
       jmiRule.addActionListener(this);
+      jmiLogin.addActionListener(this);
       
       
       
@@ -150,7 +153,7 @@ public class Client extends JFrame
          System.exit(0);
       }
       
-      if(choice == jbSend) {
+      if(choice == jmiLogin) {
          try{
          socket = new Socket(address,port);
       }
@@ -178,6 +181,19 @@ public class Client extends JFrame
       }
       
       new ClientThread().start();
+      }
+      
+      if(choice == jbSend) {
+         String message = jtSend.getText().trim();
+         jtaAreaEast.append(message + "\n");
+         try{
+               oos.writeObject(message);
+            }
+            catch(IOException ioe){
+               System.out.println("IO error: " + ioe.getMessage());
+        
+            }
+         
       }
       // if(choice.equals(jmiRestart))
 //       {
