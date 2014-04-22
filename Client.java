@@ -29,10 +29,13 @@ public class Client extends JFrame
    private JMenu jmFile, jmHelp;                               // the menus
    private JMenuItem jmiExit, jmiStart,jmiLogin, jmiAbout, jmiRule,  
            jmiRestart;     // the menu items
+           
+   String username;
    //constructor
    public Client(String address, int port){
       this.port = port;
       this.address = address;
+      username = JOptionPane.showInputDialog("Please enter a username");
 
 //////////////////////////////////////////////////////////////////////////
       
@@ -187,7 +190,7 @@ public class Client extends JFrame
          String message = jtSend.getText().trim();
         
          try{
-               oos.writeObject(message);
+               oos.writeObject(username+ ": "+message);
             }
             catch(IOException ioe){
                System.out.println("IO error: " + ioe.getMessage());
@@ -344,23 +347,7 @@ public class Client extends JFrame
       try{
          Client c = new Client(InetAddress.getLocalHost().getHostAddress(), 1500);
       
-      
-         Scanner in = new Scanner(System.in);
-      
-         while(true){
-            System.out.print("> ");
-            
-            String message = in.nextLine();
-            
-            try{
-               c.oos.writeObject(message);
-            }
-            catch(IOException ioe){
-               System.out.println("IO error: " + ioe.getMessage());
-               break;
-            }
-         
-         }
+     
       }
       catch(UnknownHostException uhe){
       }
