@@ -263,7 +263,7 @@ public class Server extends JFrame
                break;
             }
             
-            System.out.println("Client sent: " + message.toUpperCase());
+            System.out.println("Client sent: " + message);
                
             for(int i = clients.size(); --i >= 0;) {
                ServerThread c = clients.get(i);
@@ -281,7 +281,7 @@ public class Server extends JFrame
                   
                else{
                   try{
-                     c.oos.writeObject(message.toUpperCase());
+                     c.oos.writeObject(message);
                   }
                   catch(IOException ioe){
                      System.out.println("error");
