@@ -101,6 +101,7 @@ public class Client extends JFrame
 	   
       jtSend = new JTextField("Say something", 15);
       jbSend = new JButton("Send");
+      jbSend.addActionListener(this); 
       
 		jpServerEast.add(new JScrollPane(jtaAreaEast));
       jpServerEast2.add(jtSend);
@@ -136,7 +137,21 @@ public class Client extends JFrame
       setResizable(true);
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
-      try{
+      
+      
+   }
+   
+   public void actionPerformed(ActionEvent ae)
+   {
+      Object choice = ae.getSource();
+      //Client cant controll for restart and start t
+      if(choice.equals(jmiExit))
+      {
+         System.exit(0);
+      }
+      
+      if(choice == jbSend) {
+         try{
          socket = new Socket(address,port);
       }
       catch(UnknownHostException uhe){
@@ -163,16 +178,6 @@ public class Client extends JFrame
       }
       
       new ClientThread().start();
-      
-   }
-   
-   public void actionPerformed(ActionEvent ae)
-   {
-      Object choice = ae.getSource();
-      //Client cant controll for restart and start t
-      if(choice.equals(jmiExit))
-      {
-         System.exit(0);
       }
       // if(choice.equals(jmiRestart))
 //       {
