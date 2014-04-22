@@ -185,7 +185,7 @@ public class Client extends JFrame
       
       if(choice == jbSend) {
          String message = jtSend.getText().trim();
-         jtaAreaEast.append(message + "\n");
+        
          try{
                oos.writeObject(message);
             }
@@ -293,7 +293,7 @@ public class Client extends JFrame
                break;
             }
             
-            System.out.println("Server sent: " + message);
+            jtaAreaEast.append(message + "\n");
          }
          
          try{
