@@ -138,6 +138,7 @@ public class Client extends JFrame
       jpServerSouth.add(jtWins);
       add(jpServerSouth, "South");
       
+      setLocation(500,100);
       setSize(800,500);
 		setVisible(true);
       setResizable(true);
@@ -344,13 +345,10 @@ public class Client extends JFrame
    public static void main(String[] args)
    { 
       JTextArea jtaAreaEast = new JTextArea();
-      try{
-         Client c = new Client(InetAddress.getLocalHost().getHostAddress(), 1500);
-      
+      String address = JOptionPane.showInputDialog("Please enter an address to connect to:");
+      Client c = new Client(address, 1500);
      
-      }
-      catch(UnknownHostException uhe){
-      }
+  
    }
    
 }
