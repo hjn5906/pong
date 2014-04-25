@@ -63,6 +63,7 @@ public class Client extends JFrame
       
       //Mnemonic objects
       jmFile.setMnemonic(KeyEvent.VK_F);
+      jmiLogin.setMnemonic(KeyEvent.VK_L);
       jmHelp.setMnemonic(KeyEvent.VK_H);
       jmiExit.setMnemonic(KeyEvent.VK_X);
       jmiAbout.setMnemonic(KeyEvent.VK_A);
