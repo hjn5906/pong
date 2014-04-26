@@ -15,12 +15,15 @@ public class Server extends JFrame
    //instance variables
    private Vector<ServerThread> clients;
    private int port;
+   String username;
    private static int id;
-   private JTextArea jtaAreaEast, jtaAreaWest;
-   private JLabel jlCount, jlWins;
-   private JTextField jtCount, jtWins;
-   
-    private JMenuBar jmb;                                       // the menu bar
+   private ObjectInputStream ois;
+   private ObjectOutputStream oos;
+   private JTextArea jtaAreaEast, jtaAreaWest;   private JLabel jlCount, jlWins;
+   private JTextField jtCount, jtWins,jtSend;
+   private JButton jbSend;
+   private JPanel jpServerEast2;
+   private JMenuBar jmb;                                       // the menu bar
    private JMenu jmFile, jmHelp;                               // the menus
    private JMenuItem jmiExit, jmiStart, jmiAbout, jmiRule,  jmiRestart;     // the menu items
 
@@ -60,38 +63,46 @@ public class Server extends JFrame
       jmiStart.setMnemonic(KeyEvent.VK_S);
       jmiRestart.setMnemonic(KeyEvent.VK_R);
       
-      // //Adding ActionListener
+      //Adding ActionListener
       jmiStart.addActionListener(this);
       jmiRestart.addActionListener(this);
       jmiExit.addActionListener(this); 
       jmiAbout.addActionListener(this);
       jmiRule.addActionListener(this);
       
-
-      
-      
       //WEST BORDER SIDE FOR PONG GAME
       JPanel jpServerWest = new JPanel(new GridLayout(0,1));
-      JPanel jpServerEast = new JPanel(new GridLayout(0,1));
+      JPanel jpServerEast = new JPanel(new BorderLayout());
+      JPanel jpServerEast2 = new JPanel(new BorderLayout());
       JPanel jpServerSouth = new JPanel(new GridLayout(2,0));
       
-      jtaAreaWest = new JTextArea("Pong Game",20,40);
+      jtaAreaWest = new JTextArea("Pong Game",10,40);
       jtaAreaWest.setEditable(true);
       
       
       jpServerWest.add(new JScrollPane(jtaAreaWest));
-      add(jpServerWest,"West");
+      add(jpServerWest,BorderLayout.CENTER);
       
       //jtaAreaWest.append("Pong game is here");
       
       //EAST BORDER SIDE FOR CLIENT CHAT
-		jtaAreaEast = new JTextArea(20,30);
-		jtaAreaEast.setEditable(false);
+		jtaAreaEast = new JTextArea("Chat here:\n",30,10);
+      
+		jtaAreaEast.setEditable(true);
 	   
+      jtSend = new JTextField("Say something", 15);
+      jbSend = new JButton("Send");
+      jbSend.addActionListener(this); 
       
 		jpServerEast.add(new JScrollPane(jtaAreaEast));
-      add(jpServerEast,"East");
-      
+      jpServerEast2.add(jtSend);
+      jpServerEast2.add(jbSend,"East");
+      jpServerEast.add(jpServerEast2, "South");
+      //JPanel total = new JPanel(new GridLayout(2,0));
+      //total.add(jpServerEast);
+     // total.add(jpServerEast2);
+      add(jpServerEast,BorderLayout.EAST);
+      //add(jpServerEast2,"East");
       
       //SOUTH BORDER SIDE FOR LABELS FOR COUNTS OF WINS AND ON
       jlCount = new JLabel("Counts of game: ");
@@ -111,18 +122,18 @@ public class Server extends JFrame
       jpServerSouth.add(jlWins);
       jpServerSouth.add(jtWins);
       add(jpServerSouth, "South");
-      
+
       setSize(800,500);
 		setVisible(true);
       
       try{
          ServerSocket ss = new ServerSocket(port);
-         jtaAreaEast.append("Welcom to the Pong game. This port is: " + port);
+         jtaAreaEast.append("Welcom to the Pong game.\n This port is: " + port);
          jtaAreaEast.append("\n");
          while(true){
             
             Socket cs = ss.accept();
-            jtaAreaEast.append("Accepting clients at port: " + port + "\n");
+            jtaAreaEast.append("Accepting clients\n port: " + port + "\n");
             ServerThread st = new ServerThread(cs);
             clients.add(st);
             st.start();
@@ -139,6 +150,8 @@ public class Server extends JFrame
    public void actionPerformed(ActionEvent ae)
    {
       Object choice = ae.getSource();
+      
+      
       
       if(choice.equals(jmiExit))
       {
@@ -160,6 +173,24 @@ public class Server extends JFrame
       {
         
       }
+      if(choice == jbSend) 
+      {
+         
+         
+         String message = jtSend.getText().trim();
+         jtSend.setText(" ");
+        
+         try
+         {
+            oos.writeObject("Server: : "+message);
+         }
+         catch(IOException ioe)
+         {
+            System.out.println("IO error: " + ioe.getMessage());
+         }
+         
+      }
+
    }
    
    public void pickingPlayers()
@@ -282,6 +313,7 @@ public class Server extends JFrame
                else{
                   try{
                      c.oos.writeObject(message);
+                     
                   }
                   catch(IOException ioe){
                      System.out.println("error");
