@@ -20,8 +20,7 @@ public class Server extends JFrame
    private ObjectInputStream ois;
    private ObjectOutputStream oos;
    private JTextArea jtaAreaEast, jtaAreaWest;   private JLabel jlCount, jlWins;
-   private JTextField jtCount, jtWins,jtSend;
-   private JButton jbSend;
+   private JTextField jtCount, jtWins;
    private JPanel jpServerEast2;
    private JMenuBar jmb;                                       // the menu bar
    private JMenu jmFile, jmHelp;                               // the menus
@@ -73,7 +72,7 @@ public class Server extends JFrame
       //WEST BORDER SIDE FOR PONG GAME
       JPanel jpServerWest = new JPanel(new GridLayout(0,1));
       JPanel jpServerEast = new JPanel(new BorderLayout());
-      JPanel jpServerEast2 = new JPanel(new BorderLayout());
+      //JPanel jpServerEast2 = new JPanel(new BorderLayout());
       JPanel jpServerSouth = new JPanel(new GridLayout(2,0));
       
       jtaAreaWest = new JTextArea("Pong Game",10,40);
@@ -83,33 +82,22 @@ public class Server extends JFrame
       jpServerWest.add(new JScrollPane(jtaAreaWest));
       add(jpServerWest,BorderLayout.CENTER);
       
-      //jtaAreaWest.append("Pong game is here");
       
       //EAST BORDER SIDE FOR CLIENT CHAT
-		jtaAreaEast = new JTextArea("Chat here:\n",30,10);
+		jtaAreaEast = new JTextArea("Chat here:\n",30,20);
       
-		jtaAreaEast.setEditable(true);
-	   
-      jtSend = new JTextField("Say something", 15);
-      jbSend = new JButton("Send");
-      jbSend.addActionListener(this); 
+		jtaAreaEast.setEditable(false);
       
 		jpServerEast.add(new JScrollPane(jtaAreaEast));
-      jpServerEast2.add(jtSend);
-      jpServerEast2.add(jbSend,"East");
-      jpServerEast.add(jpServerEast2, "South");
-      //JPanel total = new JPanel(new GridLayout(2,0));
-      //total.add(jpServerEast);
-     // total.add(jpServerEast2);
+
       add(jpServerEast,BorderLayout.EAST);
-      //add(jpServerEast2,"East");
       
       //SOUTH BORDER SIDE FOR LABELS FOR COUNTS OF WINS AND ON
       jlCount = new JLabel("Counts of game: ");
       jtCount = new JTextField(10);
       jlCount.setHorizontalAlignment(JLabel.RIGHT);
       jtCount.setHorizontalAlignment(JTextField.CENTER);
-      //jlCount.setLabelFor(jtCount);
+      
       
       jlWins = new JLabel("Number of Wins");
       jtWins = new JTextField(5);
@@ -125,7 +113,7 @@ public class Server extends JFrame
 
       setSize(800,500);
 		setVisible(true);
-      
+      setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       try{
          ServerSocket ss = new ServerSocket(port);
          jtaAreaEast.append("Welcom to the Pong game.\n This port is: " + port);
@@ -137,7 +125,7 @@ public class Server extends JFrame
             ServerThread st = new ServerThread(cs);
             clients.add(st);
             st.start();
-            
+           
          }
       }
       catch(IOException ioe){
@@ -172,23 +160,6 @@ public class Server extends JFrame
       if(choice.equals(jmiRule))
       {
         
-      }
-      if(choice == jbSend) 
-      {
-         
-         
-         String message = jtSend.getText().trim();
-         jtSend.setText(" ");
-        
-         try
-         {
-            oos.writeObject("Server: : "+message);
-         }
-         catch(IOException ioe)
-         {
-            System.out.println("IO error: " + ioe.getMessage());
-         }
-         
       }
 
    }
