@@ -1,3 +1,6 @@
+
+
+import pong.Pong;
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -75,11 +78,13 @@ public class Server extends JFrame
       //JPanel jpServerEast2 = new JPanel(new BorderLayout());
       JPanel jpServerSouth = new JPanel(new GridLayout(2,0));
       
-      jtaAreaWest = new JTextArea("Pong Game",10,40);
-      jtaAreaWest.setEditable(true);
+    
+      
+      Pong pong = new Pong();
+
+      jpServerWest.add(pong);
       
       
-      jpServerWest.add(new JScrollPane(jtaAreaWest));
       add(jpServerWest,BorderLayout.CENTER);
       
       

@@ -6,32 +6,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class Pong extends JFrame {
-	
-	
-	private static final long serialVersionUID = 1L;
 
+public class Pong extends JPanel implements ActionListener, KeyListener {
+   private static final long serialVersionUID = 1L;
 
-	
     final static int WIDTH = 500;
     final static int HEIGHT = 300;
-	
-	
-	// start of pong constructor
-    public Pong() {
-        setResizable(false);
-		setSize(WIDTH, HEIGHT);
-		setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Game pongGame = new Game();
-		add(pongGame);
-        setVisible(true);
-    } // end of pong constructor
-	
-	
-	// start of Game class
-	class Game extends JPanel implements ActionListener, KeyListener {
-
    //instance variables
    PaddleLeft paddleLeft = new PaddleLeft();
    PaddleRight paddleRight = new PaddleRight();
@@ -40,9 +20,9 @@ public class Pong extends JFrame {
    Ball pongBall = new Ball();
    
 	/* Constructor that updates the game every 50 milliseconds */
-   public Game() {
+   public Pong() {
       //default 50
-      Timer time = new Timer(20, this);
+      Timer time = new Timer(50, this);
       time.start();
    
       this.addKeyListener(this);
@@ -168,10 +148,6 @@ public void keyTyped(KeyEvent arg0) {
 }
 
 }
-	/* Main method that start the entire game */
-    public static void main(String[] args) {
-        Pong pong = new Pong();
-    }
+	
 
 	
-}
