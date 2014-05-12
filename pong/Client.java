@@ -1,7 +1,9 @@
+package pong;
 import java.util.*;
 import java.net.*;
 import java.io.*;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -23,28 +25,32 @@ public class Client extends JFrame
    private JTextArea jtaAreaEast, jtaAreaWest;
    private JLabel jlCount, jlWins;
    private JTextField jtCount, jtWins,jtSend;
-   private JButton jbSend;
-   
+   private JButton jbSend,jbPM;
+   private JPanel jpServerWest;
    private JMenuBar jmb;                                       // the menu bar
    private JMenu jmFile, jmHelp;                               // the menus
    private JMenuItem jmiExit, jmiStart,jmiLogin, jmiAbout, jmiRule,  
            jmiRestart;     // the menu items
            
+   private static Pong instance = null;
+           
+       
    String username;
    //constructor
    public Client(String address, int port){
       this.port = port;
       this.address = address;
       username = JOptionPane.showInputDialog("Please enter a username");
-
-//////////////////////////////////////////////////////////////////////////
+      
+   
+   //////////////////////////////////////////////////////////////////////////
       
       //JMenuBar objects
       jmb = new JMenuBar(); 
       jmFile = new JMenu("File");
       jmHelp = new JMenu("Help");
       // jmiStart = new JMenuItem("Start game");
-//       jmiRestart = new JMenuItem("Restart");
+   //       jmiRestart = new JMenuItem("Restart");
       jmiExit = new JMenuItem("Exit");
       jmiAbout = new JMenuItem("About");
       jmiRule = new JMenuItem("Rules");
@@ -52,7 +58,7 @@ public class Client extends JFrame
       
       //adding JMenuBar objects to the JFrame
       // jmFile.add(jmiStart);
-//       jmFile.add(jmiRestart);
+   //       jmFile.add(jmiRestart);
       jmFile.add(jmiLogin); 
       jmFile.add(jmiExit);
       jmHelp.add(jmiAbout); 
@@ -69,11 +75,11 @@ public class Client extends JFrame
       jmiAbout.setMnemonic(KeyEvent.VK_A);
       jmiRule.setMnemonic(KeyEvent.VK_R);
       // jmiStart.setMnemonic(KeyEvent.VK_S);
-//       jmiRestart.setMnemonic(KeyEvent.VK_R);
+   //       jmiRestart.setMnemonic(KeyEvent.VK_R);
       
       // //Adding ActionListener
       // jmiStart.addActionListener(this);
-//       jmiRestart.addActionListener(this);
+   //       jmiRestart.addActionListener(this);
       jmiExit.addActionListener(this); 
       jmiAbout.addActionListener(this);
       jmiRule.addActionListener(this);
@@ -87,35 +93,38 @@ public class Client extends JFrame
       /////////////////////////////////////////////////////////////////////////////////
       
       //WEST BORDER SIDE FOR PONG GAME
-      JPanel jpServerWest = new JPanel(new GridLayout(0,1));
+       jpServerWest = new JPanel(new GridLayout(0,1));
       JPanel jpServerEast = new JPanel(new BorderLayout());
       JPanel jpServerEast2 = new JPanel(new BorderLayout());
       JPanel jpServerSouth = new JPanel(new GridLayout(2,0));
       
-      jtaAreaWest = new JTextArea("Pong Game",10,40);
-      jtaAreaWest.setEditable(true);
       
       
-      jpServerWest.add(new JScrollPane(jtaAreaWest));
+      jpServerWest.add(Pong.getInstance());
       add(jpServerWest,BorderLayout.CENTER);
+    
       
       //jtaAreaWest.append("Pong game is here");
       
       //EAST BORDER SIDE FOR CLIENT CHAT
-		jtaAreaEast = new JTextArea("Chat here:\n",30,10);
+      jtaAreaEast = new JTextArea("Chat here:\n",30,10);
       
-		jtaAreaEast.setEditable(true);
-	   
+      jtaAreaEast.setEditable(false);
+      
       jtSend = new JTextField("Say something", 15);
       jtSend.selectAll();
       jbSend = new JButton("Send");
       jbSend.addActionListener(this); 
       
-		jpServerEast.add(new JScrollPane(jtaAreaEast));
+      jbPM = new JButton("Private");
+      jbPM.addActionListener(this); 
+      
+      jpServerEast.add(new JScrollPane(jtaAreaEast));
       jpServerEast2.add(jtSend);
       jpServerEast2.add(jbSend,"East");
+      jpServerEast2.add(jbPM,"South");
       jpServerEast.add(jpServerEast2, "South");
-
+   
       add(jpServerEast,BorderLayout.EAST);
       
       //SOUTH BORDER SIDE FOR LABELS FOR COUNTS OF WINS AND ON
@@ -139,13 +148,25 @@ public class Client extends JFrame
       
       setLocation(500,100);
       setSize(800,500);
-		setVisible(true);
+      setVisible(true);
       setResizable(true);
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
       
       
+      
+      
    }
+   
+ 
+   
+   
+   public static synchronized Pong getInstance() {
+        if (instance == null) {
+            instance = new Pong();
+        }
+        return instance;
+    }
    
    public void actionPerformed(ActionEvent ae)
    {
@@ -158,61 +179,93 @@ public class Client extends JFrame
       
       if(choice == jmiLogin) {
          try{
-         socket = new Socket(address,port);
-      }
-      catch(UnknownHostException uhe){
-         System.out.println("Unknown host: " + uhe.getMessage());
-      }
-      catch(IOException ioe){
-         System.out.println("Error with input/output: " + ioe.getMessage());
-         JOptionPane.showMessageDialog(null, "Server Quits\nGood-Bye", "No more connection", JOptionPane.INFORMATION_MESSAGE);
+            socket = new Socket(address,port);
+         }
+         catch(UnknownHostException uhe){
+            System.out.println("Unknown host: " + uhe.getMessage());
+         }
+         catch(IOException ioe){
+            System.out.println("Error with input/output: " + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "Server Quits\nGood-Bye", "No more connection", JOptionPane.INFORMATION_MESSAGE);
          //System.out.println("Error with input/output: " + ioe.getMessage());
-      }
+         }
       
-      try{
-         System.out.println("Client connected to" + socket.getInetAddress() + "/" + socket.getPort());
-      }
-      catch(NullPointerException npe){
-         System.out.println("No server to connect to.");
-      }
+         try{
+            System.out.println("Client connected to" + socket.getInetAddress() + "/" + socket.getPort());
+         }
+         catch(NullPointerException npe){
+            System.out.println("No server to connect to.");
+         }
       
-      try{
-         ois = new ObjectInputStream(socket.getInputStream());
-         oos = new ObjectOutputStream(socket.getOutputStream());
-      }
-      catch(NullPointerException npe)
-      {
+         try{
+            ois = new ObjectInputStream(socket.getInputStream());
+            oos = new ObjectOutputStream(socket.getOutputStream());
+         }
+         catch(NullPointerException npe)
+         {
          //SSystem.out.println("You have no connections");
-         JOptionPane.showMessageDialog(null, "Wrong ip address\nGood-Bye!", "Never connected", JOptionPane.INFORMATION_MESSAGE);
-         System.exit(0);
-      }
-      catch(IOException ioe){
-         JOptionPane.showMessageDialog(null, "Server Quits\nGood-Bye", "No more connection", JOptionPane.INFORMATION_MESSAGE);
-         System.out.println("Error with input/output: " + ioe.getMessage());
-         System.exit(0);
+            JOptionPane.showMessageDialog(null, "Wrong ip address\nGood-Bye!", "Never connected", JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
+         }
+         catch(IOException ioe){
+            JOptionPane.showMessageDialog(null, "Server Quits\nGood-Bye", "No more connection", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Error with input/output: " + ioe.getMessage());
+            System.exit(0);
          
-      }
+         }
+         
+         try{
+             
+             
+             oos.writeObject(username);
+          }
+          catch(IOException ioe){
+             JOptionPane.showMessageDialog(null, "Sorry, server went down. please comeback soon!", "Server went down", JOptionPane.INFORMATION_MESSAGE);
+             System.out.println("IO error: " + ioe.getMessage());
+          
+          }
       
-      new ClientThread().start();
-      jtSend.requestFocus();
+         new ClientThread().start();
+      
       }
       
       if(choice == jbSend) {
          
         
          try{
-               String message = jtSend.getText().trim();
-               jtSend.setText(" ");
-               jtSend.requestFocus();
-               oos.writeObject(username+ ": "+message);
-            }
-            catch(IOException ioe){
-               JOptionPane.showMessageDialog(null, "Sorry, server went down. please comeback soon!", "Server went down", JOptionPane.INFORMATION_MESSAGE);
-               System.out.println("IO error: " + ioe.getMessage());
-        
-            }
+            String message = jtSend.getText().trim();
+            jtSend.setText(" ");
+           
+            oos.writeObject(username+ ": "+message);
+         }
+         catch(IOException ioe){
+            JOptionPane.showMessageDialog(null, "Sorry, server went down. please comeback soon!", "Server went down", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("IO error: " + ioe.getMessage());
+         
+         }
          
       }
+      
+      if(choice == jbPM) {
+          
+    	  ArrayList<String> list = new ArrayList<String>();
+    	  String pmUser;
+          
+          try{
+             String message = jtSend.getText().trim();
+             jtSend.setText(" ");
+             pmUser = JOptionPane.showInputDialog("Who would you like to private message?");
+             list.add(pmUser);
+             list.add(username+ ": "+message);
+             oos.writeObject(list);
+          }
+          catch(IOException ioe){
+             JOptionPane.showMessageDialog(null, "Sorry, server went down. please comeback soon!", "Server went down", JOptionPane.INFORMATION_MESSAGE);
+             System.out.println("IO error: " + ioe.getMessage());
+          
+          }
+          
+       }
       if(choice.equals(jmiAbout))
       {
          JOptionPane.showMessageDialog(null,"121 Final Project: Pong" +
@@ -220,38 +273,57 @@ public class Client extends JFrame
       }
       if(choice.equals(jmiRule))
       {
-        
+    	  JOptionPane.showMessageDialog(null,"To start this game press the 'G' key.\nEach player has control " +
+    	  		"of two paddles. \nPlayer 1 has control of the left paddle [moves vertically with the 'W' and 'S' keys] and the " +
+    	  		"top paddle [moves horizontally with the 'A' and 'D' paddle].\nPlayer 2 has control of the right paddle [moves veritically" +
+    	  		" with the 'UP' and 'DOWN' keys] and the bottom paddle [moves horizontally with the 'LEFT' and 'RIGHT' keys." +
+    	  		"]", "Pong", JOptionPane.INFORMATION_MESSAGE);
       }
    }
    
    //Client thread
    class ClientThread extends Thread {
       
+     
       String message;
-      
+      Pong game;
       //run method
       public void run() {
-
+      
          
          while(true){
             
             try{  
+               Object next = ois.readObject();
+               if(next instanceof String){
+                  message = (String)next;
+
+                  jtaAreaEast.append(message + "\n");
+               }
                
-               message = (String)ois.readObject();
+               if(next instanceof Pong){
+                  game = (Pong) next;
+                  System.out.println("yes");
+        
+              jpServerWest.repaint();
+               jpServerWest.add(game);
                
+            }
             }
             catch(IOException ioe){
                System.out.println("Error with input/output: " + ioe.getMessage());
                JOptionPane.showMessageDialog(null, "Server Quits\nGood-Bye", "No more connection", JOptionPane.INFORMATION_MESSAGE);
                System.exit(0);
-         
+            
             }
             catch(ClassNotFoundException cnfe){
                System.out.println("Class could not be found: " + cnfe.getMessage());
                break;
             }
             
-            jtaAreaEast.append(message + "\n");
+            
+           
+            
          }
          
          try{
@@ -273,7 +345,7 @@ public class Client extends JFrame
       String address = JOptionPane.showInputDialog("Please enter an address to connect to:");
       Client c = new Client(address, 1500);
      
-  
+   
    }
    
 }

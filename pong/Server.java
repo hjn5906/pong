@@ -1,9 +1,11 @@
 
 
-import pong.Pong;
-import java.util.*;
+package pong;
+import java.util.ArrayList;
+import java.util.Vector;
 import java.net.*;
 import java.io.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,7 +15,7 @@ import java.awt.event.*;
  * > java Server
  * */
 public class Server extends JFrame 
-   implements ActionListener{
+   implements ActionListener, KeyListener{
    
    //instance variables
    private Vector<ServerThread> clients;
@@ -27,7 +29,14 @@ public class Server extends JFrame
    private JPanel jpServerEast2;
    private JMenuBar jmb;                                       // the menu bar
    private JMenu jmFile, jmHelp;                               // the menus
-   private JMenuItem jmiExit, jmiStart, jmiAbout, jmiRule,  jmiRestart;     // the menu items
+   private JMenuItem jmiExit, jmiStart, jmiList, jmiAbout, jmiRule,  jmiRestart;     // the menu items
+   PaddleLeft paddleLeft = new PaddleLeft();
+   PaddleRight paddleRight = new PaddleRight();
+   //PaddleUp paddleUp = new PaddleUp();
+   //PaddleDown paddleDown = new PaddleDown();
+   Ball pongBall = new Ball();
+   
+   private static Pong instance = null;
 
    
    
@@ -45,10 +54,12 @@ public class Server extends JFrame
       jmiExit = new JMenuItem("Exit");
       jmiAbout = new JMenuItem("About");
       jmiRule = new JMenuItem("Rules");
+      jmiList = new JMenuItem("Logged on list");
       
       //adding JMenuBar objects to the JFrame
       jmFile.add(jmiStart);
       jmFile.add(jmiRestart);
+      jmFile.add(jmiList);
       jmFile.add(jmiExit); 
       jmHelp.add(jmiAbout); 
       jmHelp.add(jmiRule); 
@@ -64,6 +75,7 @@ public class Server extends JFrame
       jmiRule.setMnemonic(KeyEvent.VK_R);
       jmiStart.setMnemonic(KeyEvent.VK_S);
       jmiRestart.setMnemonic(KeyEvent.VK_R);
+      jmiList.setMnemonic(KeyEvent.VK_L);
       
       //Adding ActionListener
       jmiStart.addActionListener(this);
@@ -71,6 +83,7 @@ public class Server extends JFrame
       jmiExit.addActionListener(this); 
       jmiAbout.addActionListener(this);
       jmiRule.addActionListener(this);
+      jmiList.addActionListener(this);
       
       //WEST BORDER SIDE FOR PONG GAME
       JPanel jpServerWest = new JPanel(new GridLayout(0,1));
@@ -80,9 +93,9 @@ public class Server extends JFrame
       
     
       
-      Pong pong = new Pong();
+      
 
-      jpServerWest.add(pong);
+      jpServerWest.add(Pong.getInstance());
       
       
       add(jpServerWest,BorderLayout.CENTER);
@@ -126,10 +139,10 @@ public class Server extends JFrame
          while(true){
             
             Socket cs = ss.accept();
-            jtaAreaEast.append("Accepting clients\n port: " + port + "\n");
             ServerThread st = new ServerThread(cs);
             clients.add(st);
             st.start();
+            jtaAreaEast.append(st.username +" connected to port: " + port + "\n");
            
          }
       }
@@ -138,6 +151,90 @@ public class Server extends JFrame
       }
       
    }
+   
+   /* Performs actions based on what key is pressed */
+   public void keyPressed(KeyEvent ke) {
+	   int pressed = ke.getKeyCode();
+	   
+	   // up is pressed
+      if (pressed == KeyEvent.VK_UP) {
+         if (paddleRight.getYLoc() < 5) {
+            paddleRight.setSpeed(0);
+         }
+         
+         paddleRight.setSpeed(-10);
+         
+      }
+      
+	  // w is pressed
+      else if (pressed == KeyEvent.VK_W) {
+    	  if (paddleLeft.getYLoc() < 5) {
+              paddleLeft.setSpeed(0);
+           }
+         paddleLeft.setSpeed(-10); 
+      }
+      
+		// down is pressed
+      else if (pressed == KeyEvent.VK_DOWN) {
+         if (paddleRight.getYLoc() + Paddle.HEIGHT >= Pong.HEIGHT) {
+            paddleRight.setSpeed(0);
+         }
+         paddleRight.setSpeed(10);
+      }
+      else if (pressed == KeyEvent.VK_A) {
+      Timer time = new Timer(50, this);
+      time.start();
+      }
+      
+	  // s is pressed
+      else if (pressed == KeyEvent.VK_S) {
+         if (paddleLeft.getYLoc() + Paddle.HEIGHT >= Pong.HEIGHT) {
+            paddleLeft.setSpeed(0);
+         }
+         paddleLeft.setSpeed(10);
+      }
+      
+      // x is pressed
+      else if (pressed == KeyEvent.VK_X) {
+         paddleLeft.setGrowth();
+      }
+   } // end of keyPressed method
+   
+   
+	/* Performs actions based on which key is released */
+   public void keyReleased(KeyEvent ke) {
+      int released = ke.getKeyCode();
+	  
+      if (released == KeyEvent.VK_UP) {
+         paddleRight.setSpeed(0);
+      
+      }
+	  
+	  else if (released == KeyEvent.VK_W) {
+         paddleLeft.setSpeed(0);
+      
+      }
+	  
+	  else if (released == KeyEvent.VK_DOWN) {
+         paddleRight.setSpeed(0);
+      
+      }
+	  
+	  else if (released == KeyEvent.VK_S) {
+         paddleLeft.setSpeed(0);
+      
+      }
+
+   }
+
+
+@Override
+public void keyTyped(KeyEvent arg0) {
+	// TODO Auto-generated method stub
+	//Do nothing
+	
+}
+
    
    //ActionListener
    public void actionPerformed(ActionEvent ae)
@@ -164,6 +261,37 @@ public class Server extends JFrame
       }
       if(choice.equals(jmiRule))
       {
+    	  JOptionPane.showMessageDialog(null,"To start this game press the 'G' key.\nEach player has control " +
+    	  		"of two paddles. \nPlayer 1 has control of the left paddle [moves vertically with the 'W' and 'S' keys] and the " +
+    	  		"top paddle [moves horizontally with the 'A' and 'D' paddle].\nPlayer 2 has control of the right paddle [moves veritically" +
+    	  		" with the 'UP' and 'DOWN' keys] and the bottom paddle [moves horizontally with the 'LEFT' and 'RIGHT' keys." +
+    	  		"]", "Pong", JOptionPane.INFORMATION_MESSAGE);
+      }
+      
+      if(choice.equals(jmiList))
+      {
+    	  String userList = "";
+    	  for(int i = clients.size(); --i >= 0;) {
+              ServerThread c = clients.get(i);
+              if(c.socket.isConnected() == false){
+                 try{
+                    c.oos.close();
+                    c.ois.close();
+                    c.socket.close();
+                 }
+                 catch(IOException ioe) {
+                    
+                 }
+                 clients.remove(i);
+              }
+                 
+              else{
+                 
+                 userList += c.username + " " +"\n";
+              }
+           }  
+    	  
+    	  JOptionPane.showMessageDialog(null,userList);
         
       }
 
@@ -228,6 +356,8 @@ public class Server extends JFrame
 
    }
    
+ 
+   
    //end ActionListener
    //Server thread
    class ServerThread extends Thread {
@@ -238,6 +368,8 @@ public class Server extends JFrame
       ObjectInputStream ois;
       String message;
       int identification;
+      String username;
+      ArrayList test;
       
       
       //constructor
@@ -248,27 +380,46 @@ public class Server extends JFrame
          try {
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
+            
          }
          catch(IOException ioe){
             System.out.println("IO Error: " + ioe.getMessage());
          }
+         
+         try { 
+             username = (String) ois.readObject();
+           
+          }
+          catch(IOException ioe) {
+             System.out.println("Client disconnected");
+            
+          }
+          catch(ClassNotFoundException cnfe){
+             System.out.println("Class could not be found: " + cnfe.getMessage());
+             
+          }
+         
+             
       }
+      
+   
+      
       
       //run method
       public void run() {
          while(true) {
-            try { 
-               message = (String) ois.readObject();
+        	 
+        	
+			try {
+				Object next = ois.readObject();
+				if (next instanceof String) {
+			
+				
+				
+           
+               message = (String) next;
                jtaAreaEast.append("\n"+message);
-            }
-            catch(IOException ioe) {
-               System.out.println("Client disconnected");
-               break;
-            }
-            catch(ClassNotFoundException cnfe){
-               System.out.println("Class could not be found: " + cnfe.getMessage());
-               break;
-            }
+            
             
             System.out.println("Client sent: " + message);
                
@@ -289,7 +440,7 @@ public class Server extends JFrame
                else{
                   try{
                      c.oos.writeObject(message);
-                     
+  
                   }
                   catch(IOException ioe){
                      System.out.println("error");
@@ -297,7 +448,47 @@ public class Server extends JFrame
                   }
                      
                }
-            }            
+            }  
+            
+           
+				}
+				
+				else if (next instanceof ArrayList<?>) {
+					test = (ArrayList<?>) next;
+					
+					for(int i = clients.size(); --i >= 0;) {
+			               ServerThread c = clients.get(i);
+			               if(c.socket.isConnected() == false){
+			                  try{
+			                     c.oos.close();
+			                     c.ois.close();
+			                     c.socket.close();
+			                  }
+			                  catch(IOException ioe) {
+			                     
+			                  }
+			                  clients.remove(i);
+			               }
+			                  
+			               else{
+			                  try{
+			                	  if(c.username.equalsIgnoreCase((String) test.get(0)))
+			                     c.oos.writeObject((String) test.get(1));
+			  
+			                  }
+			                  catch(IOException ioe){
+			                     System.out.println("error");
+			                  
+			                  }
+			                     
+			               }
+			            } 
+				}
+			} catch (ClassNotFoundException | IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println(this.username + " has disconnected.");
+				break;
+			}
          }
          
          

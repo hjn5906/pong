@@ -4,41 +4,37 @@ package pong;
 import java.awt.*;
 
 
-public class PaddleRight implements Paddle {
+public class PaddleTop extends Paddle {
 
    
-   private int x = 5;
-   private int y = YLOC;
+   
+   private int y = 0;
    private int speed = 0;
    private int height = 0;
+   private int x = Pong.WIDTH / 2;
 
-   public PaddleRight() {
+   public PaddleTop() {
    }
 
    public void tick() {
         
-      if(y >0){
-         y += speed;
+      if(x >0){
+         x += speed;
       }
       else{
-         y = 10;
+         x = 1;
       }
        
-      if(y + HEIGHT >= Pong.HEIGHT - 20)
+      if(x + HEIGHT >= Pong.WIDTH)
       {
-         y = Pong.HEIGHT- (HEIGHT + 20);
+         x = Pong.WIDTH - HEIGHT;
       }
         
    }
 
    public void paint(Graphics g) {
-       g.setColor(Color.green);
-       g.fillRect(Pong.WIDTH - 16, y, WIDTH, getHeight());
-   }
-
-  
-   public int getXLoc() {
-       return Pong.WIDTH - 16 - WIDTH;
+      g.setColor(Color.blue);
+      g.fillRect(x, y, getHeight(), getWidth());
    }
 
    
@@ -64,7 +60,12 @@ public class PaddleRight implements Paddle {
       return HEIGHT;
    }
    
-  
+   @Override
+   public int getXLoc() {
+   	return x;
+   	// TODO Auto-generated method stub
+   	
+   }
 
    @Override
    public int getYLoc() {
@@ -89,10 +90,4 @@ public class PaddleRight implements Paddle {
 		// TODO Auto-generated method stub
 		
 	}
-
-	
 }
-
-    
-
-

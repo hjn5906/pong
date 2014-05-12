@@ -7,27 +7,36 @@ import java.awt.event.*;
 
 
 
-public class Pong extends JPanel implements ActionListener, KeyListener {
+public class Pong extends JPanel implements ActionListener, KeyListener, java.io.Serializable {
    private static final long serialVersionUID = 1L;
-
-    final static int WIDTH = 500;
-    final static int HEIGHT = 300;
+   int def = 0;
+   int count = 50;
+    public final static int WIDTH = 500;
+    public final static int HEIGHT = 300;
+   
    //instance variables
    PaddleLeft paddleLeft = new PaddleLeft();
    PaddleRight paddleRight = new PaddleRight();
-   //PaddleUp paddleUp = new PaddleUp();
-   //PaddleDown paddleDown = new PaddleDown();
+   PaddleTop paddleTop = new PaddleTop();
+   PaddleBottom paddleBottom = new PaddleBottom();
    Ball pongBall = new Ball();
    
 	/* Constructor that updates the game every 50 milliseconds */
    public Pong() {
       //default 50
-      Timer time = new Timer(50, this);
-      time.start();
-   
+      
+      
       this.addKeyListener(this);
       this.setFocusable(true);
    }
+   
+   private static Pong instance = null;
+   public static synchronized Pong getInstance() {
+        if (instance == null) {
+            instance = new Pong();
+        }
+        return instance;
+    }
 
 
 	/* Updates the location and action of the game components */
@@ -40,15 +49,17 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
    
 	/* Updates the status of the active game components */
    private void tick() {
-	   paddleRight.tick();
+	  paddleRight.tick();
       paddleLeft.tick();
+      paddleTop.tick();
+      paddleBottom.tick();
       pongBall.tick();
 
    }
    
    /* Checks to see if the pongBall has hit any solid objects */
    private void hitBox() {
-		pongBall.hitSomething(paddleLeft, paddleRight);   
+		pongBall.hitSomething(paddleLeft, paddleRight, paddleBottom, paddleTop);   
    }
 	
 	/* paints the game onto the frame */
@@ -63,6 +74,8 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
 	  paddleLeft.paint(g);
       pongBall.paint(g);
       paddleRight.paint(g);
+      paddleTop.paint(g);
+      paddleBottom.paint(g);
 
    } // end of paintComponent
 
@@ -90,12 +103,60 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
          paddleLeft.setSpeed(-10); 
       }
       
+      // a is pressed
+      else if (pressed == KeyEvent.VK_A) {
+    	  if (paddleTop.getXLoc() < 0) {
+              paddleTop.setSpeed(0);
+           }
+         paddleTop.setSpeed(-10); 
+      }
+      
+      // D is pressed
+      else if (pressed == KeyEvent.VK_D) {
+    	  if (paddleTop.getXLoc() > Pong.WIDTH) {
+              paddleTop.setSpeed(0);
+           }
+         paddleTop.setSpeed(10); 
+      }
+      
+      // left is pressed
+      else if (pressed == KeyEvent.VK_LEFT) {
+    	  if (paddleBottom.getXLoc() < 0) {
+    		  paddleBottom.setSpeed(0);
+           }
+    	  paddleBottom.setSpeed(-10); 
+      }
+      
+      // right is pressed
+      else if (pressed == KeyEvent.VK_RIGHT) {
+    	  if (paddleBottom.getXLoc() > Pong.WIDTH) {
+    		  paddleBottom.setSpeed(0);
+           }
+    	  paddleBottom.setSpeed(10); 
+      }
+
+
+      
 		// down is pressed
       else if (pressed == KeyEvent.VK_DOWN) {
          if (paddleRight.getYLoc() + Paddle.HEIGHT >= Pong.HEIGHT) {
             paddleRight.setSpeed(0);
          }
          paddleRight.setSpeed(10);
+      }
+      
+      
+      else if (pressed == KeyEvent.VK_G) {
+      while(def <1){
+      def = 1;
+      Timer time = new Timer(30, this);
+      time.start();
+      System.out.println("Yes " + def);
+      }
+      
+      
+      
+      
       }
       
 	  // s is pressed
@@ -136,6 +197,26 @@ public class Pong extends JPanel implements ActionListener, KeyListener {
          paddleLeft.setSpeed(0);
       
       }
+      
+      else if (released == KeyEvent.VK_A) {
+         paddleTop.setSpeed(0);
+      
+      }
+      
+      else if (released == KeyEvent.VK_D) {
+         paddleTop.setSpeed(0);
+      
+      }
+      
+      else if (released == KeyEvent.VK_LEFT) {
+          paddleBottom.setSpeed(0);
+       
+       }
+       
+       else if (released == KeyEvent.VK_RIGHT) {
+    	   paddleBottom.setSpeed(0);
+       
+       }
 
    }
 

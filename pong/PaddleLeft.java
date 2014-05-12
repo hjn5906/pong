@@ -4,7 +4,7 @@ package pong;
 import java.awt.*;
 
 
-public class PaddleLeft implements Paddle {
+public class PaddleLeft extends Paddle {
 
    
    private int x = 5;
